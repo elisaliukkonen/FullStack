@@ -1,0 +1,8 @@
+{
+  "persons": [
+    { "name": "Maija Maitoparta", "number": "040-123456", "id": "1" },
+    { "name": "Heikki Heiluri", "number": "020-5323523", "id": "2" },
+    { "name": "Aukku Apinanen", "number": "050-234345", "id": "3" },
+    { "name": "Siika Oksanen", "number": "045-642122", "id": "4" }
+  ]
+}
