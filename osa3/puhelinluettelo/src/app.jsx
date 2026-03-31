@@ -81,6 +81,9 @@ const App = () => {
         setNewNumber('')
         notify(`Added ${newName}`)
       })
+      .catch(error => {
+        notify(error.response.data.error, 'error')
+      })
   }
 
   const handleDelete = (person) => {
@@ -121,3 +124,4 @@ const App = () => {
 }
 
 export default App
+git push
