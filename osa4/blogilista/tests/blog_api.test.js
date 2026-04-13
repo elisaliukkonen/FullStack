@@ -3,6 +3,7 @@ const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+const Blog = require('../models/blog')
 
 const api = supertest(app)
 
@@ -23,6 +24,26 @@ describe('blog api', () => {
     const response = await api.get('/api/blogs')
     assert(response.body[0].id !== undefined)
     assert(response.body[0]._id === undefined)
+  })
+
+  test('a new blog can be added', async () => {
+    const blogsAtStart = await Blog.find({})
+
+    const newBlog = {
+      title: 'Test Blog',
+      author: 'Test Author',
+      url: 'http://test.com',
+      likes: 5
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await Blog.find({})
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length + 1)
   })
 })
 
