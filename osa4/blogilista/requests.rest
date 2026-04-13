@@ -1,0 +1,51 @@
+GET http://localhost:3003/api/blogs
+
+###
+
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "New Blog With User",
+  "author": "Test Author",
+  "url": "http://test.com",
+  "likes": 3
+}
+
+###
+
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "name": "Test User",
+  "password": "testpassword"
+}
+
+###
+
+GET http://localhost:3003/api/users
+
+###
+
+POST http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpassword"
+}
+
+###
+
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWQiOiI2OWRjOWMzYTFiOTg1Zjk2NjkxMTUyZjMiLCJpYXQiOjE3NzYwNjg0NzN9.nJR28mPFxDmZy9ae5EIiiumBfmfW6CZi6KMq8gNbvMQ
+
+{
+  "title": "Blog With Token",
+  "author": "Test Author",
+  "url": "http://test.com",
+  "likes": 7
+}
