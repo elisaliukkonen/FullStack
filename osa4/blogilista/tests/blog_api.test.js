@@ -18,6 +18,12 @@ describe('blog api', () => {
     const response = await api.get('/api/blogs')
     assert(response.body.length > 0)
   })
+
+  test('blog identifier is named id not _id', async () => {
+    const response = await api.get('/api/blogs')
+    assert(response.body[0].id !== undefined)
+    assert(response.body[0]._id === undefined)
+  })
 })
 
 after(async () => {
