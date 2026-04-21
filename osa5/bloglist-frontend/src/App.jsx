@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom'
 import Blog from './components/Blog'
 import BlogList from './components/BlogList'
 import BlogForm from './components/BlogForm'
+import BlogView from './components/BlogView'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
@@ -125,6 +126,12 @@ const App = () => {
     }
   }
 
+  const BlogViewWrapper = () => {
+    const { id } = useParams()
+    const blog = blogs.find(b => b.id === id)
+    return <BlogView blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />
+  }
+
   return (
     <Router>
       <Navigation user={user} handleLogout={handleLogout} />
@@ -140,6 +147,7 @@ const App = () => {
             setPassword={setPassword}
           />
         } />
+        <Route path="/blogs/:id" element={<BlogViewWrapper />} />
         <Route path="/" element={
           <div>
             {user && (
