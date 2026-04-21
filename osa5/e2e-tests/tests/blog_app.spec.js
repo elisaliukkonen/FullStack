@@ -124,8 +124,8 @@ describe('Blog app', () => {
       await page.getByRole('button', { name: 'like' }).click()
       await expect(page.getByText('likes 1')).toBeVisible()
 
-      const blogDivs = page.locator('div').filter({ hasText: /Author$/ })
-      await expect(blogDivs.first()).toContainText('Second Blog')
+      const blogs = page.locator('[style*="border"]')
+      await expect(blogs.first()).toContainText('Second Blog')
     })
   })
 })
