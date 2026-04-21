@@ -71,8 +71,9 @@ const App = () => {
 
   const handleCreateBlog = async ({ title, author, url }) => {
     try {
-      const newBlog = await blogService.create({ title, author, url })
-      setBlogs(blogs.concat(newBlog))
+      await blogService.create({ title, author, url })
+      const updatedBlogs = await blogService.getAll()
+      setBlogs(updatedBlogs)
       blogFormRef.current.toggleVisibility()
       notify(`a new blog ${title} by ${author} added`)
     } catch {
