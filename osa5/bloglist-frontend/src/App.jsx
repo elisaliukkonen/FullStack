@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
 import Blog from './components/Blog'
-import Togglable from './components/Togglable'
+import BlogList from './components/BlogList'
 import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -16,6 +19,19 @@ const Notification = ({ message, type }) => {
     fontSize: 18
   }
   return <div style={style}>{message}</div>
+}
+
+const Navigation = ({ user, handleLogout }) => {
+  const padding = { padding: 5 }
+  return (
+    <div style={{ background: '#f0f0f0', padding: 10, marginBottom: 10 }}>
+      <Link style={padding} to="/">blogs</Link>
+      {user
+        ? <span>{user.name} logged in <button onClick={handleLogout}>logout</button></span>
+        : <Link style={padding} to="/login">login</Link>
+      }
+    </div>
+  )
 }
 
 const App = () => {
@@ -109,48 +125,33 @@ const App = () => {
     }
   }
 
-  if (user === null) {
-    return (
-      <div>
-        <h2>Log in to application</h2>
-        <Notification message={notification} type={notificationType} />
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-            <input
-              type="text"
-              value={username}
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            password
-            <input
-              type="password"
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit">login</button>
-        </form>
-      </div>
-    )
-  }
-
   return (
-    <div>
-      <h2>blogs</h2>
+    <Router>
+      <Navigation user={user} handleLogout={handleLogout} />
       <Notification message={notification} type={notificationType} />
-      <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
 
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm createBlog={handleCreateBlog} />
-      </Togglable>
-
-      {[...blogs].sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />
-      )}
-    </div>
+      <Routes>
+        <Route path="/login" element={
+          <LoginForm
+            handleLogin={handleLogin}
+            username={username}
+            setUsername={setUsername}
+            password={password}
+            setPassword={setPassword}
+          />
+        } />
+        <Route path="/" element={
+          <div>
+            {user && (
+              <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+                <BlogForm createBlog={handleCreateBlog} />
+              </Togglable>
+            )}
+            <BlogList blogs={blogs} handleLike={handleLike} handleDelete={handleDelete} user={user} />
+          </div>
+        } />
+      </Routes>
+    </Router>
   )
 }
 
