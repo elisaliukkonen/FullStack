@@ -101,4 +101,31 @@ describe('Blog app', () => {
       await expect(page.getByRole('button', { name: 'delete' })).not.toBeVisible()
     })
 
-    test('blogs are ordered by likes', async ({ page }) =>
+    test('blogs are ordered by likes', async ({ page }) => {
+      await page.getByRole('button', { name: 'create new blog' }).click()
+      await expect(page.getByPlaceholder('title')).toBeVisible()
+      await page.getByPlaceholder('title').fill('First Blog')
+      await page.getByPlaceholder('author').fill('Author')
+      await page.getByPlaceholder('url').fill('http://first.com')
+      await page.getByRole('button', { name: 'create' }).click()
+      await expect(page.getByText('First Blog Author')).toBeVisible()
+
+      await page.getByRole('button', { name: 'create new blog' }).click()
+      await expect(page.getByPlaceholder('title')).toBeVisible()
+      await page.getByPlaceholder('title').fill('Second Blog')
+      await page.getByPlaceholder('author').fill('Author')
+      await page.getByPlaceholder('url').fill('http://second.com')
+      await page.getByRole('button', { name: 'create' }).click()
+      await expect(page.getByText('Second Blog Author')).toBeVisible()
+
+      const viewButtons = page.getByRole('button', { name: 'view' })
+      await viewButtons.nth(1).click()
+      await expect(page.getByText('likes 0')).toBeVisible()
+      await page.getByRole('button', { name: 'like' }).click()
+      await expect(page.getByText('likes 1')).toBeVisible()
+
+      const blogDivs = page.locator('div').filter({ hasText: /Author$/ })
+      await expect(blogDivs.first()).toContainText('Second Blog')
+    })
+  })
+})
