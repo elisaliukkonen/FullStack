@@ -59,7 +59,7 @@ const App = () => {
       setUsername('')
       setPassword('')
       notify(`Welcome ${user.name}!`)
-    } catch (exception) {
+    } catch {
       notify('wrong username or password', 'error')
     }
   }
@@ -75,7 +75,7 @@ const App = () => {
       setBlogs(blogs.concat(newBlog))
       blogFormRef.current.toggleVisibility()
       notify(`a new blog ${title} by ${author} added`)
-    } catch (exception) {
+    } catch {
       notify('error creating blog', 'error')
     }
   }
@@ -91,7 +91,7 @@ const App = () => {
     try {
       const returnedBlog = await blogService.update(blog.id, updatedBlog)
       setBlogs(blogs.map(b => b.id === blog.id ? { ...returnedBlog, user: blog.user } : b))
-    } catch (exception) {
+    } catch {
       notify('error updating blog', 'error')
     }
   }
@@ -102,7 +102,7 @@ const App = () => {
         await blogService.remove(blog.id)
         setBlogs(blogs.filter(b => b.id !== blog.id))
         notify(`Blog ${blog.title} deleted`)
-      } catch (exception) {
+      } catch {
         notify('error deleting blog', 'error')
       }
     }
