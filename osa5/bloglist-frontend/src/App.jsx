@@ -90,7 +90,7 @@ const App = () => {
       const updatedBlogs = await blogService.getAll()
       setBlogs(updatedBlogs)
       notify(`a new blog ${title} by ${author} added`)
-      navigate('/')
+      await navigate('/')
     } catch {
       notify('error creating blog', 'error')
     }
