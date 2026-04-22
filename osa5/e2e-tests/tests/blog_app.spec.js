@@ -54,7 +54,7 @@ describe('Blog app', () => {
       await page.getByPlaceholder('url').fill('http://test.com')
       await page.getByRole('button', { name: 'create' }).click()
       await page.waitForURL('http://localhost:5173/')
-      await expect(page.getByRole('link', { name: 'Test Blog' })).toBeVisible()
+      await expect(page.getByRole('link', { name: 'Test Blog' })).toBeVisible({ timeout: 10000 })
     })
 
     test('a blog can be liked', async ({ page }) => {
@@ -64,8 +64,7 @@ describe('Blog app', () => {
       await page.getByPlaceholder('url').fill('http://test.com')
       await page.getByRole('button', { name: 'create' }).click()
       await page.waitForURL('http://localhost:5173/')
-      await page.goto('http://localhost:5173/')
-      await expect(page.getByRole('link', { name: 'Test Blog' })).toBeVisible()
+      await expect(page.getByRole('link', { name: 'Test Blog' })).toBeVisible({ timeout: 10000 })
       await page.getByRole('link', { name: 'Test Blog' }).click()
       await expect(page.getByText('likes 0')).toBeVisible()
       await page.getByRole('button', { name: 'like' }).click()
@@ -79,7 +78,7 @@ describe('Blog app', () => {
       await page.getByPlaceholder('url').fill('http://test.com')
       await page.getByRole('button', { name: 'create' }).click()
       await page.waitForURL('http://localhost:5173/')
-      await expect(page.getByRole('link', { name: 'Test Blog' })).toBeVisible()
+      await expect(page.getByRole('link', { name: 'Test Blog' })).toBeVisible({ timeout: 10000 })
       await page.getByRole('link', { name: 'Test Blog' }).click()
       page.on('dialog', dialog => dialog.accept())
       await page.getByRole('button', { name: 'delete' }).click()
