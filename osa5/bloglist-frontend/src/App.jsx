@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, useParams, useNavigate } from 'react-router-dom'
-import Blog from './components/Blog'
 import BlogList from './components/BlogList'
 import BlogForm from './components/BlogForm'
 import BlogView from './components/BlogView'
@@ -103,4 +102,78 @@ const App = () => {
       author: blog.author,
       url: blog.url,
       likes: blog.likes + 1,
-      user: blog.user ? b
+      user: blog.user ? blog.user.id : null
+    }
+    try {
+      const returnedBlog = await blogService.update(blog.id, updatedBlog)
+      setBlogs(blogs.map(b => b.id === blog.id
+        ? { ...returnedBlog, user: blog.user }
+        : b))
+    } catch {
+      notify('error updating blog', 'error')
+    }
+  }
+
+  const handleDelete = async (blog, navigate) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      try {
+        await blogService.remove(blog.id)
+        setBlogs(blogs.filter(b => b.id !== blog.id))
+        notify(`Blog ${blog.title} deleted`)
+        navigate('/')
+      } catch {
+        notify('error deleting blog', 'error')
+      }
+    }
+  }
+
+  const BlogViewWrapper = () => {
+    const { id } = useParams()
+    const navigate = useNavigate()
+    const blog = blogs.find(b => b.id === id)
+    return (
+      <BlogView
+        blog={blog}
+        handleLike={handleLike}
+        handleDelete={(blog) => handleDelete(blog, navigate)}
+        user={user}
+      />
+    )
+  }
+
+  const NewBlogWrapper = () => {
+    const navigate = useNavigate()
+    return <NewBlog createBlog={(data) => handleCreateBlog(data, navigate)} />
+  }
+
+  return (
+    <Router>
+      <Navigation user={user} handleLogout={handleLogout} />
+      <Notification message={notification} type={notificationType} />
+
+      <Routes>
+        <Route path="/login" element={
+          <LoginForm
+            handleLogin={handleLogin}
+            username={username}
+            setUsername={setUsername}
+            password={password}
+            setPassword={setPassword}
+          />
+        } />
+        <Route path="/blogs/:id" element={<BlogViewWrapper />} />
+        <Route path="/create" element={<NewBlogWrapper />} />
+        <Route path="/" element={
+          <BlogList
+            blogs={blogs}
+            handleLike={handleLike}
+            handleDelete={handleDelete}
+            user={user}
+          />
+        } />
+      </Routes>
+    </Router>
+  )
+}
+
+export default App
