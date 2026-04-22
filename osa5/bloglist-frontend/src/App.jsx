@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link, useParams, useNavigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link, useParams, useNavigate, useLocation } from 'react-router-dom'
 import BlogList from './components/BlogList'
 import BlogForm from './components/BlogForm'
 import BlogView from './components/BlogView'
@@ -35,6 +35,23 @@ const Navigation = ({ user, handleLogout }) => {
   )
 }
 
+const BlogsPage = ({ blogs, setBlogs, handleLike, handleDelete, user }) => {
+  const location = useLocation()
+
+  useEffect(() => {
+    blogService.getAll().then(blogs => setBlogs(blogs))
+  }, [location])
+
+  return (
+    <BlogList
+      blogs={blogs}
+      handleLike={handleLike}
+      handleDelete={handleDelete}
+      user={user}
+    />
+  )
+}
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
@@ -42,12 +59,6 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [notification, setNotification] = useState(null)
   const [notificationType, setNotificationType] = useState('success')
-
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
-  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -87,10 +98,8 @@ const App = () => {
   const handleCreateBlog = async ({ title, author, url }, navigate) => {
     try {
       await blogService.create({ title, author, url })
-      const updatedBlogs = await blogService.getAll()
-      setBlogs(updatedBlogs)
       notify(`a new blog ${title} by ${author} added`)
-      await navigate('/')
+      navigate('/')
     } catch {
       notify('error creating blog', 'error')
     }
@@ -164,8 +173,9 @@ const App = () => {
         <Route path="/blogs/:id" element={<BlogViewWrapper />} />
         <Route path="/create" element={<NewBlogWrapper />} />
         <Route path="/" element={
-          <BlogList
+          <BlogsPage
             blogs={blogs}
+            setBlogs={setBlogs}
             handleLike={handleLike}
             handleDelete={handleDelete}
             user={user}
