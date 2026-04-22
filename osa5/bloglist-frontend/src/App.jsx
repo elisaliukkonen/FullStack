@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, useParams, useNavigate, useLocation } from 'react-router-dom'
+import { AppBar, Toolbar, Button, Alert, Container } from '@mui/material'
 import BlogList from './components/BlogList'
 import BlogForm from './components/BlogForm'
 import BlogView from './components/BlogView'
@@ -10,28 +11,28 @@ import loginService from './services/login'
 
 const Notification = ({ message, type }) => {
   if (!message) return null
-  const style = {
-    background: type === 'error' ? '#ffdddd' : '#ddffdd',
-    border: `2px solid ${type === 'error' ? 'red' : 'green'}`,
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-    fontSize: 18
-  }
-  return <div style={style}>{message}</div>
+  return (
+    <Alert severity={type === 'error' ? 'error' : 'success'} sx={{ mb: 2 }}>
+      {message}
+    </Alert>
+  )
 }
 
 const Navigation = ({ user, handleLogout }) => {
-  const padding = { padding: 5 }
   return (
-    <div style={{ background: '#f0f0f0', padding: 10, marginBottom: 10 }}>
-      <Link style={padding} to="/">blogs</Link>
-      {user && <Link style={padding} to="/create">create new</Link>}
-      {user
-        ? <span>{user.name} logged in <button onClick={handleLogout}>logout</button></span>
-        : <Link style={padding} to="/login">login</Link>
-      }
-    </div>
+    <AppBar position="static">
+      <Toolbar>
+        <Button color="inherit" component={Link} to="/">blogs</Button>
+        {user && <Button color="inherit" component={Link} to="/create">create new</Button>}
+        {user
+          ? <span style={{ marginLeft: 'auto' }}>
+              {user.name} logged in
+              <Button color="inherit" onClick={handleLogout}>logout</Button>
+            </span>
+          : <Button color="inherit" component={Link} to="/login" sx={{ marginLeft: 'auto' }}>login</Button>
+        }
+      </Toolbar>
+    </AppBar>
   )
 }
 
@@ -158,30 +159,31 @@ const App = () => {
   return (
     <Router>
       <Navigation user={user} handleLogout={handleLogout} />
-      <Notification message={notification} type={notificationType} />
-
-      <Routes>
-        <Route path="/login" element={
-          <LoginForm
-            handleLogin={handleLogin}
-            username={username}
-            setUsername={setUsername}
-            password={password}
-            setPassword={setPassword}
-          />
-        } />
-        <Route path="/blogs/:id" element={<BlogViewWrapper />} />
-        <Route path="/create" element={<NewBlogWrapper />} />
-        <Route path="/" element={
-          <BlogsPage
-            blogs={blogs}
-            setBlogs={setBlogs}
-            handleLike={handleLike}
-            handleDelete={handleDelete}
-            user={user}
-          />
-        } />
-      </Routes>
+      <Container sx={{ mt: 2 }}>
+        <Notification message={notification} type={notificationType} />
+        <Routes>
+          <Route path="/login" element={
+            <LoginForm
+              handleLogin={handleLogin}
+              username={username}
+              setUsername={setUsername}
+              password={password}
+              setPassword={setPassword}
+            />
+          } />
+          <Route path="/blogs/:id" element={<BlogViewWrapper />} />
+          <Route path="/create" element={<NewBlogWrapper />} />
+          <Route path="/" element={
+            <BlogsPage
+              blogs={blogs}
+              setBlogs={setBlogs}
+              handleLike={handleLike}
+              handleDelete={handleDelete}
+              user={user}
+            />
+          } />
+        </Routes>
+      </Container>
     </Router>
   )
 }
