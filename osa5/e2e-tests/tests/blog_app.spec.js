@@ -64,6 +64,7 @@ describe('Blog app', () => {
       await page.getByPlaceholder('url').fill('http://test.com')
       await page.getByRole('button', { name: 'create' }).click()
       await page.waitForURL('http://localhost:5173/')
+      await page.goto('http://localhost:5173/')
       await expect(page.getByRole('link', { name: 'Test Blog' })).toBeVisible()
       await page.getByRole('link', { name: 'Test Blog' }).click()
       await expect(page.getByText('likes 0')).toBeVisible()
