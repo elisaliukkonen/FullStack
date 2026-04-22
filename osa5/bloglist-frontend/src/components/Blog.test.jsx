@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import Blog from './Blog'
+import { MemoryRouter } from 'react-router-dom'
+import BlogView from './BlogView'
 
 const blog = {
+  id: '123',
   title: 'Test Blog Title',
   author: 'Test Author',
   url: 'http://testurl.com',
@@ -18,40 +20,54 @@ const mockUser = {
   name: 'Test User'
 }
 
-// Tehtävä 5.13
-test('renders title and author but not url or likes by default', () => {
-  render(<Blog blog={blog} handleLike={() => {}} handleDelete={() => {}} user={mockUser} />)
+const otherUser = {
+  username: 'otheruser',
+  name: 'Other User'
+}
 
-  expect(screen.getByText('Test Blog Title Test Author')).toBeDefined()
-  expect(screen.queryByText('http://testurl.com')).toBeNull()
-  expect(screen.queryByText('likes 5')).toBeNull()
-})
-
-// Tehtävä 5.14
-test('shows url, likes and user after view button is clicked', async () => {
-  render(<Blog blog={blog} handleLike={() => {}} handleDelete={() => {}} user={mockUser} />)
-
-  const user = userEvent.setup()
-  const button = screen.getByText('view')
-  await user.click(button)
-
+test('shows blog details but no buttons for logged out user', () => {
+  render(
+    <MemoryRouter>
+      <BlogView blog={blog} handleLike={() => {}} handleDelete={() => {}} user={null} />
+    </MemoryRouter>
+  )
+  expect(screen.getByText('Test Blog Title by Test Author')).toBeDefined()
   expect(screen.getByText('http://testurl.com')).toBeDefined()
   expect(screen.getByText('likes 5')).toBeDefined()
-  expect(screen.getByText('Test User')).toBeDefined()
+  expect(screen.queryByText('like')).toBeNull()
+  expect(screen.queryByText('delete')).toBeNull()
 })
 
-// Tehtävä 5.15
+test('shows only like button for logged in user who is not creator', () => {
+  render(
+    <MemoryRouter>
+      <BlogView blog={blog} handleLike={() => {}} handleDelete={() => {}} user={otherUser} />
+    </MemoryRouter>
+  )
+  expect(screen.getByText('like')).toBeDefined()
+  expect(screen.queryByText('delete')).toBeNull()
+})
+
+test('shows delete button for blog creator', () => {
+  render(
+    <MemoryRouter>
+      <BlogView blog={blog} handleLike={() => {}} handleDelete={() => {}} user={mockUser} />
+    </MemoryRouter>
+  )
+  expect(screen.getByText('like')).toBeDefined()
+  expect(screen.getByText('delete')).toBeDefined()
+})
+
 test('like button calls event handler twice when clicked twice', async () => {
   const mockHandleLike = vi.fn()
-  render(<Blog blog={blog} handleLike={mockHandleLike} handleDelete={() => {}} user={mockUser} />)
-
+  render(
+    <MemoryRouter>
+      <BlogView blog={blog} handleLike={mockHandleLike} handleDelete={() => {}} user={mockUser} />
+    </MemoryRouter>
+  )
   const user = userEvent.setup()
-  const viewButton = screen.getByText('view')
-  await user.click(viewButton)
-
   const likeButton = screen.getByText('like')
   await user.click(likeButton)
   await user.click(likeButton)
-
   expect(mockHandleLike.mock.calls).toHaveLength(2)
 })
