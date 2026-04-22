@@ -11,6 +11,7 @@ describe('Blog app', () => {
       }
     })
     await page.goto('http://localhost:5173')
+    await page.evaluate(() => window.localStorage.clear())
   })
 
   test('Login form is shown', async ({ page }) => {
